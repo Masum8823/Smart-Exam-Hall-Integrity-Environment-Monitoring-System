@@ -7,18 +7,18 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 const int redLED    = 6;   // Alert for wrong posture or smoke
 const int yellowLED = 7;   // Alert for high heat/stress
 const int greenLED  = 8;   // System Status: Normal
+const int buzzerPin = A2;  // Audible alert pin (Buzzer)
 
 // Sensor pin definitions
 const int gasSensorPin  = A0;
 const int tempSensorPin = A1;
 const int trigPin       = 9;
 const int echoPin       = 10;
-const int buttonPin     = 13;
 
 // Threshold values for Exam Hall Monitoring
 const float MIN_SAFE = 15.0; // Minimum safe distance in cm
 const float MAX_SAFE = 30.0; // Maximum safe distance in cm
-const int   SMOKE_LIMIT = 550; 
+const int   SMOKE_LIMIT = 490; 
 const float STRESS_TEMP = 38.0; 
 
 void setup() {
@@ -26,9 +26,9 @@ void setup() {
   pinMode(redLED,    OUTPUT);
   pinMode(yellowLED, OUTPUT);
   pinMode(greenLED,  OUTPUT);
+  pinMode(buzzerPin, OUTPUT); // Buzzer pin configuration
   pinMode(trigPin,   OUTPUT);
   pinMode(echoPin,   INPUT);
-  pinMode(buttonPin, INPUT_PULLUP);
 
   // Initialize Serial Monitor for debugging
   Serial.begin(9600);
@@ -60,6 +60,7 @@ float getTemperature() {
 }
 
 void loop() {
+  
   // Reading data from all sensors
   int   smokeVal = analogRead(gasSensorPin);
   float tempC    = getTemperature();
@@ -75,25 +76,28 @@ void loop() {
   Serial.print(" | Temp: ");   Serial.print(tempC);
   Serial.print(" | Smoke: ");  Serial.println(smokeVal);
 
-  // LED Logic Control
+  // --- Alert System Logic (LEDs & Buzzer) ---
+  
   if (suspiciousPose || smokeDetected) {
     digitalWrite(redLED, HIGH);
     digitalWrite(greenLED, LOW);
+    digitalWrite(buzzerPin, HIGH); // Activate buzzer for cheating or smoke
   } else {
     digitalWrite(redLED, LOW);
   }
 
   if (highHeat) {
     digitalWrite(yellowLED, HIGH);
+    digitalWrite(greenLED, LOW);
+    digitalWrite(buzzerPin, HIGH); // Activate buzzer for heat alert
   } else {
     digitalWrite(yellowLED, LOW);
   }
 
-  // System status is GREEN only if all conditions are normal
+  // System status is GREEN and BUZZER is OFF if all conditions are normal
   if (!suspiciousPose && !smokeDetected && !highHeat) {
     digitalWrite(greenLED, HIGH);
-  } else {
-    digitalWrite(greenLED, LOW);
+    digitalWrite(buzzerPin, LOW); // Turn off buzzer
   }
 
   // Update LCD Display: Line 1
