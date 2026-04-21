@@ -1,4 +1,4 @@
-# 🎓 Smart Exam Hall Guard: Anti-Cheating & Safety Monitor (v2.0) 🛡️
+# 🎓 Smart Exam Hall Integrity and Environment Monitoring System (v2.0) 🛡️
 
 ![Arduino](https://img.shields.io/badge/Arduino-00979D?style=for-the-badge&logo=arduino&logoColor=white)
 ![C++](https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
